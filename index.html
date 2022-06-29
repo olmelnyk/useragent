@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title></title>
+</head>
+<body>
+    <div style="padding: 0 10px;">
+        <h1>user agent:</h1>
+        <span id="useragent"></span>
+    </div>
+    <div style="padding: 0 10px;">
+        <h1>info:</h1>
+        <span id="info"></span>
+    </div>
+    <div style="padding: 0 10px;">
+        <h1>name:</h1>
+        <span id="name"></span>
+    </div>
+    <div style="padding: 0 10px;">
+        <h1>version:</h1>
+        <span id="version"></span>
+    </div>
+
+
+	<script>
+		/*
+   eslint
+       no-var: 0,
+       prefer-template: 0
+*/
+
+var browser = getBrowserInfo();
+
+var COMPATIBLE_CHROME_VERSION = 53;
+var COMPATIBLE_FIREFOX_VERSION = 47;
+var COMPATIBLE_OPERA_VERSION = 43;
+var COMPATIBLE_SAFARI_VERSION = 9;
+var COMPATIBLE_EDGE_VERSION = 14;
+
+function getBrowserInfo() {
+    var tem;
+    var userAgent = navigator.userAgent;
+    var info = userAgent.match(/(opera|edge|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+
+    document.getElementById("useragent").innerHTML = userAgent;
+    document.getElementById("info").innerHTML = JSON.stringify(info);
+
+    if (/trident/i.test(info[1])) {
+        tem = /\brv[ :]+(\d+)/g.exec(userAgent) || [];
+
+        return {
+            name: 'IE',
+            version: (tem[1] || ''),
+        };
+    }
+
+    if (info[1] === 'Chrome') {
+        tem = userAgent.match(/\b(OPR|Edge)\/(\d+)/);
+
+        if (tem != null) {
+            return {
+                name: tem[1],
+                version: tem[2],
+            };
+        }
+    }
+
+    if (info[1] === 'Safari') {
+        tem = userAgent.match(/version(?=\/)\/?\s*(\d+)/i);
+
+        if (tem != null) {
+            return {
+                name: 'Safari',
+                version: tem[1],
+            };
+        }
+    }
+
+    info = info[2]
+        ? [info[1], info[2]]
+        : [navigator.appName, navigator.appVersion, '-?'];
+
+    if (userAgent.match(/version\/(\d+)/i) != null) {
+        info.splice(1, 1, tem[1]);
+    }
+    
+    if (userAgent.match(/(fban|fbav(?=\/))/i) != null){
+        return {
+            name: 'FacebookMobile'
+        };
+    }
+
+    return {
+        name: info[0],
+        version: info[1],
+    };
+}
+
+function isBrowserCompatible() {
+
+    document.getElementById("name").innerHTML = browser.name;
+    document.getElementById("version").innerHTML = browser.version;
+
+    switch (browser.name.toLowerCase()) {
+        case 'chrome': {
+            if (browser.version >= COMPATIBLE_CHROME_VERSION) {
+                return true;
+            }
+
+            return false;
+        }
+
+        case 'firefox': {
+            if (browser.version >= COMPATIBLE_FIREFOX_VERSION) {
+                return true;
+            }
+
+            return false;
+        }
+
+        case 'opr': {
+            if (browser.version >= COMPATIBLE_OPERA_VERSION) {
+                return true;
+            }
+
+            return false;
+        }
+
+        case 'safari': {
+            if (browser.version >= COMPATIBLE_SAFARI_VERSION) {
+                return true;
+            }
+
+            return false;
+        }
+
+        case 'edge': {
+            if (browser.version >= COMPATIBLE_EDGE_VERSION) {
+                return true;
+            }
+
+            return false;
+        }
+        
+        case 'facebookmobile': {
+            return true;
+        }
+
+        default: {
+            return false;
+        }
+    }
+}
+
+isBrowserCompatible();
+
+	</script>
+</body>
+</html>
